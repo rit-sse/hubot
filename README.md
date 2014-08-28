@@ -1,4 +1,4 @@
-# Hubot
+# Hubot [![Build Status](https://travis-ci.org/rit-sse/rit-sse-hubot.svg?branch=master)](https://travis-ci.org/rit-sse/rit-sse-hubot)
 
 This is a version of GitHub's Campfire bot, hubot. He's pretty cool.
 
