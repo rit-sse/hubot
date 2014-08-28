@@ -10,3 +10,4 @@ deploy:
   api_key:
     secure: lfUCVje3Zzm4jcWeu9DPVLFql0GtaFi3tLh1PynjVFgNHoA4Pwy/z93inRgkfRfYzSp7wftLP0/F2RGeZ69e57dD2gZZCZO4wMoL9bBOtwMkEvEHF/aJTqmsSaGNMQDz+jnnu/Ik7y/I7cgPMBe60QAkEnirwp0lLM6MJe6AB7U=
   app: rit-sse-hubot
+  run: chmod +x ./bin/hubot
