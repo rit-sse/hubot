@@ -7,10 +7,16 @@
 module.exports = (robot) ->
   robot.respond /is (.+) a member/i, (msg) ->
     name = msg.match[1]
-    robot.log 'info', "Requesting scoreboard for #{ name }"
+    _log 'info', "Requesting scoreboard for #{ name }"
     searchMe msg, name, (isMember) ->
-      robot.log 'info', "Requested scoreboard, resolved membership for #{ name } to #{ isMember }"
+      _log 'info', "Requested scoreboard, resolved membership for #{ name } to #{ isMember }"
       msg.send isMember and "Yep, #{name}'s a member" or "Nope, #{ name } is not a member yet"
+  
+  _log: (level, message) ->
+    if arguments.length is 1
+      message = level
+      level = 'debug'
+    robot.logger[level] "[hubot-scoreboard#{ level }] #{ message }"
 
 searchMe = (msg, dce, cb) ->
   msg.http('https://sse.se.rit.edu/scoreboard/members/'+dce)
