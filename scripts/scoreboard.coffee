@@ -20,7 +20,7 @@ module.exports = (robot) ->
 
 searchMe = (msg, dce, _log, cb) ->
   _log 'info', "Dispatching request for #{ dce }"
-  msg.http('http://sse.se.rit.edu')
+  msg.http('https://sse.se.rit.edu', {rejectUnauthorized: false})
     .path("scoreboard/members/#{ dce }")
     .get() (err, res, body) ->
       _log 'info', "Got reply for #{ dce }"
