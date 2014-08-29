@@ -27,7 +27,9 @@
   "dependencies": {
     "hubot":         ">= 2.6.0 < 3.0.0",
     "hubot-scripts": ">= 2.5.0 < 3.0.0",
-    "hubot-gitter2": "*"
+    "hubot-gitter2": "*",
+    "underscore": ">= 1.0.0",
+    "clark": "0.0.6"
   },
 
   "engines": {
