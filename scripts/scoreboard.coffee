@@ -19,11 +19,11 @@ module.exports = (robot) ->
       msg.send if isMember then "Yep, #{name}'s a member" else "Nope, #{ name } is not a member yet"
 
 searchMe = (msg, dce, _log, cb) ->
-  _log 'info', "Dispatching request for #{ name }"
+  _log 'info', "Dispatching request for #{ dce }"
   msg.http('https://sse.se.rit.edu')
-    .path('scoreboard/members/'+dce)
+    .path("scoreboard/members/#{ dce }")
     .get() (err, res, body) ->
-      _log 'info', "Got reply for #{ name }"
+      _log 'info', "Got reply for #{ dce }"
       if (err or body.indexOf('Not a member')>-1 or body.indexOf('No Such Member')>-1)
         cb(false)
       cb(true)
