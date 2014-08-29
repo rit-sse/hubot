@@ -10,7 +10,7 @@ module.exports = (robot) ->
       message = level
       level = 'debug'
     robot.logger[level] "[hubot-scoreboard#{ level }] #{ message }"
-    
+
   robot.respond /is (.+) a member/i, (msg) ->
     name = msg.match[1]
     _log 'info', "Requesting scoreboard for #{ name }"
@@ -20,7 +20,7 @@ module.exports = (robot) ->
 
 searchMe = (msg, dce, _log, cb) ->
   _log 'info', "Dispatching request for #{ dce }"
-  msg.http('https://sse.se.rit.edu')
+  msg.http('http://sse.se.rit.edu')
     .path("scoreboard/members/#{ dce }")
     .get() (err, res, body) ->
       _log 'info', "Got reply for #{ dce }"
