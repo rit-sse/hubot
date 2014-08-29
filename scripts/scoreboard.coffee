@@ -5,10 +5,12 @@
 #   hubot is <dce> a member?
 
 module.exports = (robot) ->
-  robot.respond /is (.+) (a )?member(\?)?.*/i, (msg) ->
-    searchMe msg, msg.match[1], (isMember) ->
-      robot.log 'info', "Requested scoreboard, resolved membership for #{ msg.match[1] } to #{ isMember }"
-      msg.send isMember and "Yep" or "Nope"
+  robot.respond /is ((.+) a member|(.+) member)/i, (msg) ->
+    name = msg.match[1] or msg.match[2]
+    robot.log 'info', "Requesting scoreboard for #{ name }"
+    searchMe msg, name, (isMember) ->
+      robot.log 'info', "Requested scoreboard, resolved membership for #{ name } to #{ isMember }"
+      msg.send isMember and "Yep, #{name}'s a member" or "Nope, #{ name } is not a member yet"
 
 searchMe = (msg, dce, cb) ->
   msg.http('https://sse.se.rit.edu/scoreboard/members/'+dce)
