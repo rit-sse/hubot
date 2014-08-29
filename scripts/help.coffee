@@ -72,6 +72,7 @@ module.exports = (robot) ->
     emit = cmds.join "\n"
 
     msg.send emit
+    msg.send "See http://rit-sse-hubot.herokuapp.com/hubot/help for detailed help"
 
   robot.router.get "/#{robot.name}/help", (req, res) ->
     cmds = robot.helpCommands().map (cmd) ->
