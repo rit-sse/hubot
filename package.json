@@ -29,7 +29,8 @@
     "hubot-scripts": ">= 2.5.0 < 3.0.0",
     "hubot-gitter2": "*",
     "hubot-plusplus": "*",
-    "underscore": "*"
+    "underscore": "*",
+    "jsdom": "*"
   },
 
   "engines": {
