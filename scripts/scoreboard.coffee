@@ -5,8 +5,8 @@
 #   hubot is <dce> a member?
 
 module.exports = (robot) ->
-  robot.respond /is ((.+) a member|(.+) member)/i, (msg) ->
-    name = msg.match[1] or msg.match[2]
+  robot.respond /is (.+) a member/i, (msg) ->
+    name = msg.match[1]
     robot.log 'info', "Requesting scoreboard for #{ name }"
     searchMe msg, name, (isMember) ->
       robot.log 'info', "Requested scoreboard, resolved membership for #{ name } to #{ isMember }"
