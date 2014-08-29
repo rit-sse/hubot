@@ -16,7 +16,7 @@ module.exports = (robot) ->
     _log 'info', "Requesting scoreboard for #{ name }"
     searchMe msg, name, (isMember) ->
       _log 'info', "Requested scoreboard, resolved membership for #{ name } to #{ isMember }"
-      msg.send isMember and "Yep, #{name}'s a member" or "Nope, #{ name } is not a member yet"
+      msg.send if isMember then "Yep, #{name}'s a member" else "Nope, #{ name } is not a member yet"
 
 searchMe = (msg, dce, cb) ->
   msg.http('https://sse.se.rit.edu')
