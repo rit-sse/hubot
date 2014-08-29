@@ -7,6 +7,7 @@
 module.exports = (robot) ->
   robot.respond /is (.+) (a )?member(\?)?.*/i, (msg) ->
     searchMe msg, msg.match[1], (isMember) ->
+      robot.log 'info', 'Requested scoreboard, resolved membership for #{ msg.match[1] } to #{ isMember }'
       msg.send isMember and "Yep" or "Nope"
 
 searchMe = (msg, dce, cb) ->
