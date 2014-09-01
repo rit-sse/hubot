@@ -15,7 +15,7 @@ module.exports = (robot) ->
   lasttime = null;
   
   robot.brain.on 'save', () ->
-    if !lasttime #Hold off loading this until first save, so we know data is loaded into the brain
+    if (!lasttime) && (robot.brain.data.timestamp) #Hold off loading this until first save, so we know data is loaded into the brain
       lasttime = new Date(robot.brain.data.timestamp)
       _log 'info', "Loaded prior timestamp #{lasttime} as last save time."
     robot.brain.data.timestamp = new Date()
