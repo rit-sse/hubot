@@ -33,15 +33,17 @@ searchMe = (msg, dce, _log, cb) ->
   msg.http('https://sse.se.rit.edu')
     .path("scoreboard/api/members/#{ dce }")
     .get() (err, res, body) ->
+      _log 'info', "Got members response for #{ dce }."
       finished++
-      _log 'info', "Got reply for #{ dce }"
       if (!err)
         resp = JSON.parse(body)
         return cb(resp.full_name)
       if (finished>=2)
+        _log 'info', "Memberships had no entry for #{ dce }."
         return cb(false)
     .path("scoreboard/api/high_scores")
     .get() (err, res, body) ->
+      _log 'info', "Got high scores response."
       finished++
       if (!err)
         resp = JSON.parse(body)
@@ -52,4 +54,5 @@ searchMe = (msg, dce, _log, cb) ->
           if (dce.toLower().indexOf(elem.full_name.toLower()) >= 0)
             return cb(elem.full_name)
       if (finished>=2)
+        _log 'info', "High scores had no entry for #{ dce }."
         return cb(false)
