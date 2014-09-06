@@ -45,9 +45,10 @@ searchMe = (msg, dce, _log, cb) ->
     .get() (err, res, body) ->
       _log 'info', "Got members response for #{ dce }, resp no. #{ calls }."
       if ((!err) and (!found))
-        found = true;
         resp = JSON.parse(body)
-        return cb(resp.full_name)
+        if (resp.full_name)
+          found = true;
+          return cb(resp.full_name)
       else
         failure()
 
