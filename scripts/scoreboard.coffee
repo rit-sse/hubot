@@ -46,9 +46,9 @@ searchMe = (msg, dce, _log, cb) ->
       if (!err)
         resp = JSON.parse(body)
         for elem of resp
-          if (elem.full_name.indexOf(dce) >= 0)
+          if (elem.full_name.toLower().indexOf(dce.toLower()) >= 0)
             return cb(elem.full_name)
-          if (dce.indexOf(elem.full_name) >= 0)
+          if (dce.toLower().indexOf(elem.full_name.toLower()) >= 0)
             return cb(elem.full_name)
       if (finished>=2)
         return cb(false)
