@@ -35,7 +35,7 @@ searchMe = (msg, dce, _log, cb) ->
   msg.http('https://sse.se.rit.edu')
     .path("scoreboard/api/members/#{ dce }")
     .get() (err, res, body) ->
-      _log 'info', "Got members response for #{ dce }."
+      _log 'info', "Got members response for #{ dce }, resp no. #{ finished }."
       finished++
       if (!err)
         resp = JSON.parse(body)
@@ -45,7 +45,7 @@ searchMe = (msg, dce, _log, cb) ->
         return cb(false)
     .path("scoreboard/api/high_scores")
     .get() (err, res, body) ->
-      _log 'info', "Got high scores response."
+      _log 'info', "Got high scores response. resp no. #{ finished }."
       finished++
       if (!err)
         resp = JSON.parse(body)
