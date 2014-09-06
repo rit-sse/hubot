@@ -30,7 +30,8 @@
     "hubot-gitter2": "*",
     "hubot-plusplus": "*",
     "underscore": "*",
-    "jsdom": "*"
+    "jsdom": "*",
+    "fuse.js": "~1.1.7"
   },
 
   "engines": {

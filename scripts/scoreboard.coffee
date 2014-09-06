@@ -4,6 +4,8 @@
 # Commands:
 #   hubot is <dce> a member?
 
+Fuse = require "fuse"
+
 module.exports = (robot) ->
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
   
@@ -47,12 +49,15 @@ searchMe = (msg, dce, _log, cb) ->
       finished++
       if (!err)
         resp = JSON.parse(body)
-        for elem of resp
-          _log 'info', "Checking #{ dce } against #{ elem.full_name }"
-          if (elem.full_name.toLower().indexOf(dce.toLower()) >= 0)
-            return cb(elem.full_name)
-          if (dce.toLower().indexOf(elem.full_name.toLower()) >= 0)
-            return cb(elem.full_name)
+        _log 'info', body
+        options = {
+          keys: ['full_name'],
+          id: 'full_name'
+        }
+        f = new Fuse(resp, options)
+        result = f.search(dce)
+        if (result.length > 0)
+          cb(result[0])
       if (finished>=2)
         _log 'info', "High scores had no entry for #{ dce }."
         return cb(false)
