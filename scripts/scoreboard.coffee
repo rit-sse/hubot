@@ -36,7 +36,7 @@ searchMe = (msg, dce, _log, cb) ->
   calls = 0;
   failure = () ->
     calls = calls + 1;
-    if (calls==2)
+    if (calls == 2)
       cb(false);
   
   msg.http('https://sse.se.rit.edu')
@@ -48,8 +48,7 @@ searchMe = (msg, dce, _log, cb) ->
         resp = JSON.parse(body)
         return cb(resp.full_name)
       else
-        if (err)
-          failure()
+        failure()
 
   msg.http('https://sse.se.rit.edu')
     .path("scoreboard/api/high_scores")
