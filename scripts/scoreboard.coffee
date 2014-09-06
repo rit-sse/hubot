@@ -31,26 +31,30 @@ module.exports = (robot) ->
 
 searchMe = (msg, dce, _log, cb) ->
   _log 'info', "Dispatching request for #{ dce }"
-  finished = 0
-  found = false;
+  found = false
+  
+  calls = 0;
+  failure = () ->
+    calls = calls + 1;
+    if (calls==2)
+      cb(false);
+  
   msg.http('https://sse.se.rit.edu')
     .path("scoreboard/api/members/#{ dce }")
     .get() (err, res, body) ->
       _log 'info', "Got members response for #{ dce }, resp no. #{ finished }."
-      finished++
       if ((!err) and (!found))
         found = true;
         resp = JSON.parse(body)
         return cb(resp.full_name)
-      if (finished>=2)
-        _log 'info', "Memberships had no entry for #{ dce }."
-        return cb(false)
+      else
+        if (err)
+          failure()
 
   msg.http('https://sse.se.rit.edu')
     .path("scoreboard/api/high_scores")
     .get() (err, res, body) ->
       _log 'info', "Got high scores response. resp no. #{ finished }."
-      finished++
       if ((!err) and (!found))
         resp = JSON.parse(body)
         options = {
@@ -62,8 +66,8 @@ searchMe = (msg, dce, _log, cb) ->
         if (result.length > 0)
           found = true;
           return cb(result[0])
+        else
+          return failure()
       else
-        _log 'info', "High score response error: #{ err }"
-      if (finished>=2)
-        _log 'info', "High scores had no entry for #{ dce }."
-        return cb(false)
+        if (!found)
+          _log 'info', "High score response error: #{ err }"
