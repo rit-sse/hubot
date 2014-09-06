@@ -34,19 +34,21 @@ searchMe = (msg, dce, _log, cb) ->
   _log 'info', "Dispatching request for #{ dce }"
   found = false
   
-  failed = 0
   failure = () ->
-    failed++
-    _log 'info', "Logged failure no. #{ failed }"
-    if (failed is 2)
+    _log 'info', "Logged first search failure."
+    failure = () ->
+      _log 'info', "Logged second search failure."
       cb(false)
   
   msg.http('https://sse.se.rit.edu')
     .path("scoreboard/api/members/#{ dce }")
     .get() (err, res, body) ->
-      _log 'info', "Got members response for #{ dce }, resp no. #{ calls }."
+      _log 'info', "Got members response for #{ dce }"
       if ((!err) and (!found))
-        resp = JSON.parse(body)
+        try
+          resp = JSON.parse(body)
+        catch
+          return failure()
         if (resp.full_name)
           found = true;
           return cb(resp.full_name)
@@ -55,9 +57,12 @@ searchMe = (msg, dce, _log, cb) ->
   msg.http('https://sse.se.rit.edu')
     .path("scoreboard/api/high_scores")
     .get() (err, res, body) ->
-      _log 'info', "Got high scores response. resp no. #{ calls }."
+      _log 'info', "Got high scores response."
       if ((!err) and (!found))
-        resp = JSON.parse(body)
+        try
+          resp = JSON.parse(body)
+        catch
+          return failure()
         options = {
           keys: ['full_name'],
           id: 'full_name',
