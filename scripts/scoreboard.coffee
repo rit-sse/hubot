@@ -32,13 +32,14 @@ module.exports = (robot) ->
 searchMe = (msg, dce, _log, cb) ->
   _log 'info', "Dispatching request for #{ dce }"
   finished = 0
-
+  found = false;
   msg.http('https://sse.se.rit.edu')
     .path("scoreboard/api/members/#{ dce }")
     .get() (err, res, body) ->
       _log 'info', "Got members response for #{ dce }, resp no. #{ finished }."
       finished++
-      if (!err)
+      if (!err and !found)
+        found = true;
         resp = JSON.parse(body)
         return cb(resp.full_name)
       if (finished>=2)
@@ -50,9 +51,8 @@ searchMe = (msg, dce, _log, cb) ->
     .get() (err, res, body) ->
       _log 'info', "Got high scores response. resp no. #{ finished }."
       finished++
-      if (!err)
+      if (!err and !found)
         resp = JSON.parse(body)
-        _log 'info', body
         options = {
           keys: ['full_name'],
           id: 'full_name'
@@ -60,6 +60,7 @@ searchMe = (msg, dce, _log, cb) ->
         f = new Fuse(resp, options)
         result = f.search(dce)
         if (result.length > 0)
+          found = true;
           cb(result[0])
       else
         _log 'info', "High score response error: #{ err }"
