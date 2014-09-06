@@ -65,8 +65,7 @@ searchMe = (msg, dce, _log, cb) ->
         if (result.length > 0)
           found = true;
           return cb(result[0])
-        else
-          return failure()
       else
+        failure()
         if (!found)
           _log 'info', "High score response error: #{ err }"
