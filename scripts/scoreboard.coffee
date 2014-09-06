@@ -38,7 +38,7 @@ searchMe = (msg, dce, _log, cb) ->
     .get() (err, res, body) ->
       _log 'info', "Got members response for #{ dce }, resp no. #{ finished }."
       finished++
-      if (!err and !found)
+      if ((!err) and (!found))
         found = true;
         resp = JSON.parse(body)
         return cb(resp.full_name)
@@ -51,7 +51,7 @@ searchMe = (msg, dce, _log, cb) ->
     .get() (err, res, body) ->
       _log 'info', "Got high scores response. resp no. #{ finished }."
       finished++
-      if (!err and !found)
+      if ((!err) and (!found))
         resp = JSON.parse(body)
         options = {
           keys: ['full_name'],
