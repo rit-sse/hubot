@@ -61,7 +61,7 @@ searchMe = (msg, dce, _log, cb) ->
         result = f.search(dce)
         if (result.length > 0)
           found = true;
-          cb(result[0])
+          return cb(result[0])
       else
         _log 'info', "High score response error: #{ err }"
       if (finished>=2)
