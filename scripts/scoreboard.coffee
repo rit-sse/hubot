@@ -34,9 +34,12 @@ searchMe = (msg, dce, _log, cb) ->
   _log 'info', "Dispatching request for #{ dce }"
   found = false
   
+  failed = 0
   failure = () ->
-    failure = () ->
-      cb(false);
+    failed++
+    _log 'info', "Logged failure no. #{ failed }"
+    if (failed is 2)
+      cb(false)
   
   msg.http('https://sse.se.rit.edu')
     .path("scoreboard/api/members/#{ dce }")
@@ -47,8 +50,7 @@ searchMe = (msg, dce, _log, cb) ->
         if (resp.full_name)
           found = true;
           return cb(resp.full_name)
-      else
-        failure()
+      failure()
 
   msg.http('https://sse.se.rit.edu')
     .path("scoreboard/api/high_scores")
@@ -68,6 +70,6 @@ searchMe = (msg, dce, _log, cb) ->
           found = true;
           return cb(result[0])
       else
-        failure()
         if (!found)
           _log 'info', "High score response error: #{ err }"
+      failure()
