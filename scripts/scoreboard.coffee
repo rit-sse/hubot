@@ -48,5 +48,7 @@ searchMe = (msg, dce, _log, cb) ->
         for elem of resp
           if (elem.full_name.indexOf(dce) >= 0)
             return cb(elem.full_name)
+          if (dce.indexOf(elem.full_name) >= 0)
+            return cb(elem.full_name)
       if (finished>=2)
         return cb(false)
