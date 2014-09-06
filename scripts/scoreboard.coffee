@@ -35,9 +35,7 @@ searchMe = (msg, dce, _log, cb) ->
   found = false
   
   failure = () ->
-    @calls ?= 0
-    @calls = @calls + 1;
-    if (@calls == 2)
+    failure = () ->
       cb(false);
   
   msg.http('https://sse.se.rit.edu')
