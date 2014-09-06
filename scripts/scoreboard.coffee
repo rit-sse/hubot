@@ -3,6 +3,7 @@
 #
 # Commands:
 #   hubot is <dce> a member?
+#   hubot am i a member?
 
 Fuse = require "fuse.js"
 
@@ -42,7 +43,7 @@ searchMe = (msg, dce, _log, cb) ->
   msg.http('https://sse.se.rit.edu')
     .path("scoreboard/api/members/#{ dce }")
     .get() (err, res, body) ->
-      _log 'info', "Got members response for #{ dce }, resp no. #{ finished }."
+      _log 'info', "Got members response for #{ dce }, resp no. #{ calls }."
       if ((!err) and (!found))
         found = true;
         resp = JSON.parse(body)
@@ -53,7 +54,7 @@ searchMe = (msg, dce, _log, cb) ->
   msg.http('https://sse.se.rit.edu')
     .path("scoreboard/api/high_scores")
     .get() (err, res, body) ->
-      _log 'info', "Got high scores response. resp no. #{ finished }."
+      _log 'info', "Got high scores response. resp no. #{ calls }."
       if ((!err) and (!found))
         resp = JSON.parse(body)
         options = {
