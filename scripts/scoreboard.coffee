@@ -34,10 +34,10 @@ searchMe = (msg, dce, _log, cb) ->
   _log 'info', "Dispatching request for #{ dce }"
   found = false
   
-  calls = 0;
   failure = () ->
-    calls = calls + 1;
-    if (calls == 2)
+    @calls ?= 0
+    @calls = @calls + 1;
+    if (@calls == 2)
       cb(false);
   
   msg.http('https://sse.se.rit.edu')
@@ -60,7 +60,8 @@ searchMe = (msg, dce, _log, cb) ->
         resp = JSON.parse(body)
         options = {
           keys: ['full_name'],
-          id: 'full_name'
+          id: 'full_name',
+          threshold: 0.3 #Gotta be pretty close
         }
         f = new Fuse(resp, options)
         result = f.search(dce)
