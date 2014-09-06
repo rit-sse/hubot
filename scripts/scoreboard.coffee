@@ -32,6 +32,7 @@ module.exports = (robot) ->
 searchMe = (msg, dce, _log, cb) ->
   _log 'info', "Dispatching request for #{ dce }"
   finished = 0
+
   msg.http('https://sse.se.rit.edu')
     .path("scoreboard/api/members/#{ dce }")
     .get() (err, res, body) ->
@@ -43,6 +44,8 @@ searchMe = (msg, dce, _log, cb) ->
       if (finished>=2)
         _log 'info', "Memberships had no entry for #{ dce }."
         return cb(false)
+
+  msg.http('https://sse.se.rit.edu')
     .path("scoreboard/api/high_scores")
     .get() (err, res, body) ->
       _log 'info', "Got high scores response. resp no. #{ finished }."
