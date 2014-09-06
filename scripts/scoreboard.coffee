@@ -63,6 +63,7 @@ searchMe = (msg, dce, _log, cb) ->
         }
         f = new Fuse(resp, options)
         result = f.search(dce)
+        _log 'info', "Fuzzy matched: #{ result }."
         if (result.length > 0)
           found = true;
           return cb(result[0])
