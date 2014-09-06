@@ -59,7 +59,7 @@ searchMe = (msg, dce, _log, cb) ->
         options = {
           keys: ['full_name'],
           id: 'full_name',
-          threshold: 0.3 #Gotta be pretty close
+          threshold: 0.5 #Gotta be pretty close
         }
         f = new Fuse(resp, options)
         result = f.search(dce)
