@@ -58,6 +58,8 @@ searchMe = (msg, dce, _log, cb) ->
         result = f.search(dce)
         if (result.length > 0)
           cb(result[0])
+      else
+        _log 'info', "High score response error: #{ err }"
       if (finished>=2)
         _log 'info', "High scores had no entry for #{ dce }."
         return cb(false)
