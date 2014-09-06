@@ -4,7 +4,7 @@
 # Commands:
 #   hubot is <dce> a member?
 
-Fuse = require "fuse"
+Fuse = require "fuse.js"
 
 module.exports = (robot) ->
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
