@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "fuse.js": "~1.1.7",
-    "hubot": ">= 2.6.0 < 3.0.0",
+    "hubot": "^2.13.2",
     "hubot-eval": "^0.9.1",
     "hubot-http-status": "^0.2.1",
     "hubot-plusplus": "*",
