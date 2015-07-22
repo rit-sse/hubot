@@ -1,1 +1,10 @@
-["hubot-plusplus"]
+[
+  "hubot-plusplus",
+  "hubot-redis-brain",
+  "hubot-eval",
+  "hubot-http-status",
+  "hubot-remind",
+  "hubot-shipit",
+  "hubot-slack",
+  "hubot-xkcd"
+]
