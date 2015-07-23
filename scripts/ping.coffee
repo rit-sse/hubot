@@ -9,17 +9,17 @@
 
 module.exports = (robot) ->
   robot.respond /PING$/i, (msg) ->
-    msg.send "PONG"
+    robot.send { room: msg.envelope.user.name }, "PONG"
 
   robot.respond /ADAPTER$/i, (msg) ->
-    msg.send robot.adapterName
+    robot.send { room: msg.envelope.user.name }, robot.adapterName
 
   robot.respond /ECHO (.*)$/i, (msg) ->
     msg.send msg.match[1]
 
   robot.respond /TIME$/i, (msg) ->
-    msg.send "Server time is: #{new Date()}"
+    robot.send { room: msg.envelope.user.name }, "Server time is: #{new Date()}"
 
   robot.respond /DIE$/i, (msg) ->
-    msg.send "Suicide is not the answer"
+    robot.send { room: msg.envelope.user.name }, "Suicide is not the answer"
 
