@@ -7,15 +7,15 @@
 
 module.exports = function(robot) {
 
-  robot.respond(/allow command (.*)/i, {id: 'channel.allow'}, function(msg) {
+  robot.respond(/allow command (.*)/i, {id: 'room.allow'}, function(msg) {
     var plugin = msg.match[1].toLowerCase();
     var room = msg.message.room;
 
-    var channelPermissions = robot.brain.data.channelPermissions = robot.brain.data.channelPermissions || {};
-    channelPermissions[room] = channelPermissions[room] || [];
+    var roomPermissions = robot.brain.data.roomPermissions = robot.brain.data.roomPermissions || {};
+    roomPermissions[room] = roomPermissions[room] || [];
 
-    if(channelPermissions[room].indexOf(plugin) === -1){
-      channelPermissions[room].push(plugin);
+    if(roomPermissions[room].indexOf(plugin) === -1){
+      roomPermissions[room].push(plugin);
       robot.brain.save();
 
       msg.send(room + " is allowed to use " + plugin);
@@ -24,18 +24,18 @@ module.exports = function(robot) {
     }
   });
 
-  robot.respond(/remove command (.*)/i, {id: 'channel.remove'}, function(msg) {
+  robot.respond(/remove command (.*)/i, {id: 'room.remove'}, function(msg) {
     var plugin = msg.match[1].toLowerCase();
     var room = msg.message.room;
 
-    var channelPermissions = robot.brain.data.channelPermissions = robot.brain.data.channelPermissions || {};
-    channelPermissions[room] = channelPermissions[room] || [];
+    var roomPermissions = robot.brain.data.roomPermissions = robot.brain.data.roomPermissions || {};
+    roomPermissions[room] = roomPermissions[room] || [];
 
-    var index = channelPermissions[room].indexOf(plugin);
+    var index = roomPermissions[room].indexOf(plugin);
     if(index === -1){
       msg.send(room + " already can't use " + plugin);
     } else {
-      channelPermissions[room].splice(index, 1);
+      roomPermissions[room].splice(index, 1);
       robot.brain.save();
       msg.send(room + " can no longer use use " + plugin);
     }
