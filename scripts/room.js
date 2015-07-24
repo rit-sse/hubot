@@ -4,7 +4,7 @@
 // Commands:
 //   hubot enable <commandId> - Enable this command in the current room
 //   hubot disable <commandId> - Disable this command in the current room
-//   hubtot list commands - Displays all commands for a room sorted into enabled and disabled
+//   hubot list commands - Displays all commands for a room sorted into enabled and disabled
 
 module.exports = function(robot) {
   var defaults = robot.brain.data.defaultCommands = ['room.enable', 'help', 'room.list-commands', 'room.disable'];
