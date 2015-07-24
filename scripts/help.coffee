@@ -53,7 +53,7 @@ helpContents = (name, commands) ->
   """
 
 module.exports = (robot) ->
-  robot.respond /help\s*(.*)?$/i, (msg) ->
+  robot.respond /help\s*(.*)?$/i, {id: 'help'}, (msg) ->
     cmds = robot.helpCommands()
     filter = msg.match[1]
 

@@ -2,8 +2,9 @@
 //   Sets the permissions for commands in a room
 //
 // Commands:
-//   hubot allow command <command id> - Allows this command in the current room
-//   hubot remove command <command id > - Remove this command in the current room
+//   hubot allow command <commandId> - Allows this command in the current room
+//   hubot remove command <commandId> - Remove this command in the current room
+//   hubtot list commands - Displays all commands for a room sorted into enabled and disabled
 
 module.exports = function(robot) {
 
@@ -39,5 +40,28 @@ module.exports = function(robot) {
       robot.brain.save();
       msg.send(room + " can no longer use use " + plugin);
     }
+  });
+
+  robot.respond(/list commands/i, {id: 'room.listCommands'}, function(msg) {
+    var room = msg.message.room;
+
+    var roomPermissions = robot.brain.data.roomPermissions || {};
+    var enabled = roomPermissions[room] || [];
+
+    var disabled = robot.listeners.reduce(function(prev, listener){
+      if(enabled.indexOf(listener.options.id) == -1){
+        if(listener.options.id) {
+          prev.push(listener.options.id);
+        }
+      }
+      return prev;
+    }, []);
+
+    var message = "Enabled Commands in " + room + "\n";
+    message += enabled.join('\n');
+    message += "\n\nDisabled Commands in " + room + "\n";
+    message += disabled.join('\n');
+
+    robot.send({ room: msg.envelope.user.name }, message);
   });
 }
