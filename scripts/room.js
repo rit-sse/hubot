@@ -24,7 +24,7 @@ module.exports = function(robot) {
     }
   });
 
-  robot.respond(/remove command (.*)/i, {id: 'channel.allow'}, function(msg) {
+  robot.respond(/remove command (.*)/i, {id: 'channel.remove'}, function(msg) {
     var plugin = msg.match[1].toLowerCase();
     var room = msg.message.room;
 
