@@ -7,11 +7,6 @@
 //   hubtot list commands - Displays all commands for a room sorted into enabled and disabled
 
 module.exports = function(robot) {
-
-  var commands = robot.listeners.map(function(l){
-    return l.options.id;
-  });
-
   var defaults = robot.brain.data.defaultCommands = ['room.enable', 'help', 'room.list-commands', 'room.disable'];
 
   robot.respond(/enable (.*)/i, {id: 'room.enable'}, function(msg) {
@@ -22,6 +17,9 @@ module.exports = function(robot) {
     roomPermissions[room] = roomPermissions[room] || defaults.slice(0);
 
     if(roomPermissions[room].indexOf(commandId) === -1){
+      var commands = robot.listeners.map(function(l){
+        return l.options.id;
+      });
       if(commands.indexOf(commandId) !== -1){
         roomPermissions[room].push(commandId);
         robot.brain.save();
