@@ -9,11 +9,11 @@
 Util = require "util"
 
 module.exports = (robot) ->
-  robot.respond /show storage$/i, (msg) ->
+  robot.respond /show storage$/i, id: 'storage.show', (msg) ->
     output = Util.inspect(robot.brain.data, false, 4)
     msg.send output
 
-  robot.respond /show users$/i, (msg) ->
+  robot.respond /show users$/i, id: 'storage.users', (msg) ->
     response = ""
 
     for own key, user of robot.brain.data.users

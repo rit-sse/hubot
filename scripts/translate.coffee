@@ -81,11 +81,11 @@ module.exports = (robot) ->
                        "(?: from (#{language_choices}))?" +
                        "(?: (?:in)?to (#{language_choices}))?" +
                        '(.*)', 'i')
-  robot.respond pattern, (msg) ->
+  robot.respond pattern, id: 'translate', (msg) ->
     term   = "\"#{msg.match[3]}\""
     origin = if msg.match[1] isnt undefined then getCode(msg.match[1], languages) else 'auto'
     target = if msg.match[2] isnt undefined then getCode(msg.match[2], languages) else 'en'
-    
+
     msg.http("https://translate.google.com/translate_a/t")
       .query({
         client: 't'

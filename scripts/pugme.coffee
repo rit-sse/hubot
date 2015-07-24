@@ -13,18 +13,18 @@
 
 module.exports = (robot) ->
 
-  robot.respond /pug me/i, (msg) ->
+  robot.respond /pug me/i, id: 'pug.me', (msg) ->
     msg.http("http://pugme.herokuapp.com/random")
       .get() (err, res, body) ->
         msg.send JSON.parse(body).pug
 
-  robot.respond /pug bomb( (\d+))?/i, (msg) ->
+  robot.respond /pug bomb( (\d+))?/i, id: 'pug.bomb', (msg) ->
     count = msg.match[2] || 5
     msg.http("http://pugme.herokuapp.com/bomb?count=" + count)
       .get() (err, res, body) ->
         msg.send pug for pug in JSON.parse(body).pugs
 
-  robot.respond /how many pugs are there/i, (msg) ->
+  robot.respond /how many pugs are there/i, id: 'pug.count', (msg) ->
     msg.http("http://pugme.herokuapp.com/count")
       .get() (err, res, body) ->
         msg.send "There are #{JSON.parse(body).pug_count} pugs."
