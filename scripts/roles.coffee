@@ -1,89 +1,129 @@
-# Description:
-#   Assign roles to people you're chatting with
+# Description
+#   Assign roles to users and restrict command access in other scripts.
+#
+# Configuration:
+#   HUBOT_AUTH_ADMIN - A comma separate list of user IDs
 #
 # Commands:
-#   hubot <user> is a badass guitarist - assign a role to a user
-#   hubot <user> is not a badass guitarist - remove a role from a user
-#   hubot who is <user> - see what roles a user has
+#   hubot <user> has <role> role - Assigns a role to a user
+#   hubot <user> doesn't have <role> role - Removes a role from a user
+#   hubot what roles does <user> have - Find out what roles a user has
+#   hubot what roles do I have - Find out what roles you have
+#   hubot who has <role> role - Find out who has the given role
 #
-# Examples:
-#   hubot holman is an ego surfer
-#   hubot holman is not an ego surfer
+# Notes:
+#   * Call the method: robot.auth.hasRole(msg.envelope.user,'<role>')
+#   * returns bool true or false
+#
+#   * the 'admin' role can only be assigned through the environment variable
+#   * roles are all transformed to lower case
+#
+#   * The script assumes that user IDs will be unique on the service end as to
+#     correctly identify a user. Names were insecure as a user could impersonate
+#     a user
+
+config =
+  admin_list: process.env.HUBOT_AUTH_ADMIN
 
 module.exports = (robot) ->
 
-  if process.env.HUBOT_AUTH_ADMIN?
-    robot.logger.warning 'The HUBOT_AUTH_ADMIN environment variable is set not going to load roles.coffee, you should delete it'
-    return
+  unless config.admin_list?
+    robot.logger.warning 'The HUBOT_AUTH_ADMIN environment variable not set'
 
-  getAmbiguousUserText = (users) ->
-    "Be more specific, I know #{users.length} people named like that: #{(user.name for user in users).join(", ")}"
+  if config.admin_list?
+    admins = config.admin_list.split ','
+  else
+    admins = []
 
-  robot.respond /who is @?([\w .\-]+)\?*$/i, (msg) ->
-    joiner = ', '
-    name = msg.match[1].trim()
+  class Auth
+    isAdmin: (user) ->
+      user.id.toString() in admins
 
-    if name is "you"
-      msg.send "Who ain't I?"
-    else if name is robot.name
-      msg.send "The best."
+    hasRole: (user, roles) ->
+      userRoles = @userRoles(user)
+      if userRoles?
+        roles = [roles] if typeof roles is 'string'
+        for role in roles
+          return true if role in userRoles
+      return false
+
+    usersWithRole: (role) ->
+      users = []
+      for own key, user of robot.brain.data.users
+        if @hasRole(user, role)
+          users.push(user.name)
+      users
+
+    userRoles: (user) ->
+      roles = []
+      if user? and robot.auth.isAdmin user
+        roles.push('admin')
+      if user.roles?
+        roles = roles.concat user.roles
+      roles
+
+  robot.auth = new Auth
+
+  robot.respond /@?(.+) ha(s|ve) (["'\w: -_]+) role/i, id: 'role.addRole', (msg) ->
+    unless robot.auth.isAdmin msg.message.user
+      msg.reply "Sorry, only admins can assign roles."
     else
-      users = robot.brain.usersForFuzzyName(name)
-      if users.length is 1
-        user = users[0]
-        user.roles = user.roles or [ ]
-        if user.roles.length > 0
-          if user.roles.join('').search(',') > -1
-            joiner = '; '
-          msg.send "#{name} is #{user.roles.join(joiner)}."
+      name = msg.match[1].trim()
+      if name.toLowerCase() is 'i' then name = msg.message.user.name
+      newRole = msg.match[3].trim().toLowerCase()
+
+      unless name.toLowerCase() in ['', 'who', 'what', 'where', 'when', 'why']
+        user = robot.brain.userForName(name)
+        return msg.reply "#{name} does not exist" unless user?
+        user.roles or= []
+
+        if newRole in user.roles
+          msg.reply "#{name} already has the '#{newRole}' role."
         else
-          msg.send "#{name} is nothing to me."
-      else if users.length > 1
-        msg.send getAmbiguousUserText users
-      else
-        msg.send "#{name}? Never heard of 'em"
-
-  robot.respond /@?([\w .\-_]+) is (["'\w: \-_]+)[.!]*$/i, (msg) ->
-    name    = msg.match[1].trim()
-    newRole = msg.match[2].trim()
-
-    unless name in ['', 'who', 'what', 'where', 'when', 'why']
-      unless newRole.match(/^not\s+/i)
-        users = robot.brain.usersForFuzzyName(name)
-        if users.length is 1
-          user = users[0]
-          user.roles = user.roles or [ ]
-
-          if newRole in user.roles
-            msg.send "I know"
+          if newRole is 'admin'
+            msg.reply "Sorry, the 'admin' role can only be defined in the HUBOT_AUTH_ADMIN env variable."
           else
+            myRoles = msg.message.user.roles or []
             user.roles.push(newRole)
-            if name.toLowerCase() is robot.name.toLowerCase()
-              msg.send "Ok, I am #{newRole}."
-            else
-              msg.send "Ok, #{name} is #{newRole}."
-        else if users.length > 1
-          msg.send getAmbiguousUserText users
+            msg.reply "OK, #{name} has the '#{newRole}' role."
+
+  robot.respond /@?(.+) do(n't|esn't|es)( not)? have (["'\w: -_]+) role/i, id: 'role.removeRole', (msg) ->
+    unless robot.auth.isAdmin msg.message.user
+      msg.reply "Sorry, only admins can remove roles."
+    else
+      name = msg.match[1].trim()
+      if name.toLowerCase() is 'i' then name = msg.message.user.name
+      newRole = msg.match[4].trim().toLowerCase()
+
+      unless name.toLowerCase() in ['', 'who', 'what', 'where', 'when', 'why']
+        user = robot.brain.userForName(name)
+        return msg.reply "#{name} does not exist" unless user?
+        user.roles or= []
+
+        if newRole is 'admin'
+          msg.reply "Sorry, the 'admin' role can only be removed from the HUBOT_AUTH_ADMIN env variable."
         else
-          msg.send "I don't know anything about #{name}."
-
-  robot.respond /@?([\w .\-_]+) is not (["'\w: \-_]+)[.!]*$/i, (msg) ->
-    name    = msg.match[1].trim()
-    newRole = msg.match[2].trim()
-
-    unless name in ['', 'who', 'what', 'where', 'when', 'why']
-      users = robot.brain.usersForFuzzyName(name)
-      if users.length is 1
-        user = users[0]
-        user.roles = user.roles or [ ]
-
-        if newRole not in user.roles
-          msg.send "I know."
-        else
+          myRoles = msg.message.user.roles or []
           user.roles = (role for role in user.roles when role isnt newRole)
-          msg.send "Ok, #{name} is no longer #{newRole}."
-      else if users.length > 1
-        msg.send getAmbiguousUserText users
-      else
-        msg.send "I don't know anything about #{name}."
+          msg.reply "OK, #{name} doesn't have the '#{newRole}' role."
 
+  robot.respond /what roles? do(es)? @?(.+) have\?*$/i, id: 'roles.userRoles', (msg) ->
+    name = msg.match[2].trim()
+    if name.toLowerCase() is 'i' then name = msg.message.user.name
+    user = robot.brain.userForName(name)
+    return msg.reply "#{name} does not exist" unless user?
+    userRoles = robot.auth.userRoles(user)
+
+    if userRoles.length == 0
+      msg.reply "#{name} has no roles."
+    else
+      msg.reply "#{name} has the following roles: #{userRoles.join(', ')}."
+
+  robot.respond /who has (["'\w: -_]+) role\?*$/i, id: 'roles.whois', (msg) ->
+    role = msg.match[1]
+    userNames = robot.auth.usersWithRole(role) if role?
+
+    if userNames.length > 0
+      msg.reply "The following people have the '#{role}' role: #{userNames.join(', ')}"
+    else
+      msg.reply "There are no people that have the '#{role}' role."

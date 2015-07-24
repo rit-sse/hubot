@@ -23,7 +23,6 @@
   "dependencies": {
     "fuse.js": "~1.1.7",
     "hubot": "michaelansel/hubot#middleware",
-    "hubot-auth": "^1.2.0",
     "hubot-plusplus": "*",
     "hubot-redis-brain": "0.0.3",
     "hubot-scripts": ">= 2.5.0 < 3.0.0",
