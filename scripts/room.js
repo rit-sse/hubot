@@ -2,8 +2,8 @@
 //   Sets the permissions for commands in a room
 //
 // Commands:
-//   hubot allow command <commandId> - Allows this command in the current room
-//   hubot remove command <commandId> - Remove this command in the current room
+//   hubot enable <commandId> - Enable this command in the current room
+//   hubot disable <commandId> - Disable this command in the current room
 //   hubtot list commands - Displays all commands for a room sorted into enabled and disabled
 
 module.exports = function(robot) {
@@ -12,9 +12,9 @@ module.exports = function(robot) {
     return l.options.id;
   });
 
-  var defaults = robot.brain.data.defaultCommands = ['room.allow', 'help', 'room.list-commands', 'room.remove'];
+  var defaults = robot.brain.data.defaultCommands = ['room.enable', 'help', 'room.list-commands', 'room.disable'];
 
-  robot.respond(/allow command (.*)/i, {id: 'room.allow'}, function(msg) {
+  robot.respond(/enable (.*)/i, {id: 'room.enable'}, function(msg) {
     var commandId = msg.match[1];
     var room = msg.message.room;
 
@@ -26,16 +26,16 @@ module.exports = function(robot) {
         roomPermissions[room].push(commandId);
         robot.brain.save();
 
-        msg.send(room + " is allowed to use " + commandId);
+        msg.send(commandId + " is enabled in " + room);
       } else {
         msg.send(commandId + " is not an available command.  run `list commands` to see the list.");
       }
     } else {
-      msg.send(room + " is already allowed to use " + commandId);
+      msg.send(commandId + " is already enabled in " + room);
     }
   });
 
-  robot.respond(/remove command (.*)/i, {id: 'room.remove'}, function(msg) {
+  robot.respond(/disable (.*)/i, {id: 'room.disable'}, function(msg) {
     var commandId = msg.match[1];
     var room = msg.message.room;
 
@@ -44,13 +44,13 @@ module.exports = function(robot) {
 
     var index = roomPermissions[room].indexOf(commandId);
     if(index === -1){
-      msg.send(room + " already can't use " + commandId);
+      msg.send(commandId + " is already disabled in " + room);
     } else if(defaults.indexOf(commandId) !== -1){
-      msg.send("Why on earth would you want to remove this command? Stahp.")
+      msg.send("Why on earth would you want to disable this command? Stahp.")
     } else {
       roomPermissions[room].splice(index, 1);
       robot.brain.save();
-      msg.send(room + " can no longer use use " + commandId);
+      msg.send(commandId + " is disabled in " + room);
     }
   });
 

@@ -9,7 +9,7 @@ module.exports = function(robot) {
     var user = context.response.envelope.user;
     var cp = robot.brain.data.roomPermissions || {};
     var permissions = cp[room] || [];
-    if((id === 'room.allow' || id === 'room.remove') && (robot.auth.hasRole(user, room + '-admin') || robot.auth.isAdmin(user))) {
+    if((id === 'room.enable' || id === 'room.disable') && (robot.auth.hasRole(user, room + '-admin') || robot.auth.isAdmin(user))) {
       next(done);
     } else if ( robot.brain.data.defaultCommands.indexOf(id) !== -1 ||permissions.indexOf(id) !== -1) {
       next(done);
