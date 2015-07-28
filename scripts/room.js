@@ -11,13 +11,15 @@ module.exports = function(robot) {
   var defaults = robot.brain.data.defaultCommands = ['room.enable', 'help', 'room.list-commands', 'room.disable'];
 
   robot.respond(/enable (.*)/i, {id: 'room.enable'}, function(msg) {
-    var commandId = msg.match[1];
     var room = msg.message.room;
+    var user = msg.envelope.user;
 
-    var roomPermissions = robot.brain.data.roomPermissions = robot.brain.data.roomPermissions || {};
-    roomPermissions[room] = roomPermissions[room] || defaults.slice(0);
+    if(robot.auth.hasRole(user, room + '-admin') || robot.auth.isAdmin(user)) {
+      var commandId = msg.match[1];
 
-    if(roomPermissions[room].indexOf(commandId) === -1){
+      var commandBlacklists = robot.brain.data.commandBlacklists = robot.brain.data.commandBlacklists || {};
+      commandBlacklists[room] = commandBlacklists[room] || [];
+      var index = commandBlacklists[room].indexOf(commandId);
       var commands = robot.listeners.reduce(function(prev, l){
         if(l.options.id) {
           prev.push(l.options.id);
@@ -26,52 +28,70 @@ module.exports = function(robot) {
       }, []);
 
       if(commandId === 'all'){
-        roomPermissions[room] = commands;
+        commandBlacklists[room] = [];
         robot.brain.save();
         msg.send('All commands enabled in ' + room);
-      } else if(commands.indexOf(commandId) !== -1){
-        roomPermissions[room].push(commandId);
+      } else if(commands.indexOf(commandId) === -1){
+        msg.send(commandId + " is not an available command.  run `list commands` to see the list.");
+      } else if(index === -1){
+        msg.send(commandId + " is already enabled in " + room);
+      } else {
+        commandBlacklists[room].splice(index, 1);
         robot.brain.save();
         msg.send(commandId + " is enabled in " + room);
-      } else {
-        msg.send(commandId + " is not an available command.  run `list commands` to see the list.");
       }
     } else {
-      msg.send(commandId + " is already enabled in " + room);
+      robot.send({ room: msg.envelope.user.name }, "Only admins can enable commands");
     }
   });
 
   robot.respond(/disable (.*)/i, {id: 'room.disable'}, function(msg) {
-    var commandId = msg.match[1];
     var room = msg.message.room;
+    var user = msg.envelope.user;
 
-    var roomPermissions = robot.brain.data.roomPermissions = robot.brain.data.roomPermissions || {};
-    roomPermissions[room] = roomPermissions[room] || defaults.slice(0);
+    if(robot.auth.hasRole(user, room + '-admin') || robot.auth.isAdmin(user)) {
+      var commandId = msg.match[1];
+      var room = msg.message.room;
 
-    var index = roomPermissions[room].indexOf(commandId);
-    if(commandId === 'all') {
-      roomPermissions[room] = defaults.slice(0);
-      robot.brain.save();
-      msg.send('All commands disabled in ' + room);
-    } else if(index === -1){
-      msg.send(commandId + " is already disabled in " + room);
-    } else if(defaults.indexOf(commandId) !== -1){
-      msg.send("Why on earth would you want to disable this command? Stahp.")
+      var commandBlacklists = robot.brain.data.commandBlacklists = robot.brain.data.commandBlacklists || {};
+      commandBlacklists[room] = commandBlacklists[room] || [];
+
+      var index = commandBlacklists[room].indexOf(commandId);
+      var commands = robot.listeners.reduce(function(prev, l){
+        if(l.options.id && defaults.indexOf(l.options.id) === -1) {
+          prev.push(l.options.id);
+        }
+        return prev;
+      }, []);
+
+      if(commandId === 'all'){
+        commandBlacklists[room] = commands;
+        robot.brain.save();
+        msg.send('All commands disabled in ' + room);
+      } else if(index !== -1){
+        msg.send(commandId + " is already disabled in " + room);
+      } else if(defaults.indexOf(commandId) !== -1){
+        msg.send("Why on earth would you want to disable this command? Stahp.")
+      } else if(commands.indexOf(commandId) === -1) {
+        msg.send(commandId + " is not an available command.  run `list commands` to see the list.");
+      } else {
+        commandBlacklists[room].push(commandId);
+        robot.brain.save();
+        msg.send(commandId + " is disabled in " + room);
+      }
     } else {
-      roomPermissions[room].splice(index, 1);
-      robot.brain.save();
-      msg.send(commandId + " is disabled in " + room);
+      robot.send({ room: msg.envelope.user.name }, "Only admins can disable commands");
     }
   });
 
   robot.respond(/list commands/i, {id: 'room.list-commands'}, function(msg) {
     var room = msg.message.room;
 
-    var roomPermissions = robot.brain.data.roomPermissions || {};
-    var enabled = roomPermissions[room] || defaults.slice(0);
+    var commandBlacklists = robot.brain.data.commandBlacklists || {};
+    var disabled = commandBlacklists[room] || [];
 
-    var disabled = robot.listeners.reduce(function(prev, listener){
-      if(enabled.indexOf(listener.options.id) == -1){
+    var enabled = robot.listeners.reduce(function(prev, listener){
+      if(disabled.indexOf(listener.options.id) == -1){
         if(listener.options.id) {
           prev.push(listener.options.id);
         }

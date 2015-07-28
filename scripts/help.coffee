@@ -61,7 +61,7 @@ module.exports = (robot) ->
       cmds = cmds.filter (cmd) ->
         cmd.match new RegExp(filter, 'i')
       if cmds.length == 0
-        msg.send "No available commands match #{filter}"
+        robot.send { room: msg.envelope.user.name }, "No available commands match #{filter}"
         return
 
     prefix = robot.alias or robot.name

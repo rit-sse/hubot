@@ -7,17 +7,15 @@ module.exports = function(robot) {
     var id = context.listener.options.id;
     var room = context.response.envelope.room;
     var user = context.response.envelope.user;
-    var cp = robot.brain.data.roomPermissions || {};
-    var permissions = cp[room] || [];
-    if((id === 'room.enable' || id === 'room.disable') && (robot.auth.hasRole(user, room + '-admin') || robot.auth.isAdmin(user))) {
+    var cb = robot.brain.data.commandBlacklists || {};
+    var blacklist = cb[room] || [];
+    if (room === user.name ) { //I don't care what you and hubot do on your own time
       next(done);
-    } else if ( robot.brain.data.defaultCommands.indexOf(id) !== -1 ||permissions.indexOf(id) !== -1) {
-      next(done);
-    } else if (room === user.name ) { //I don't care what you and hubot do on your own time
-      next(done);
-    } else {
+    } else if (blacklist.indexOf(id) !== -1) {
       robot.send({ room: user.name }, "Sorry you aren't allowed to run that command in " + room);
       done();
+    } else {
+      next(done);
     }
   });
 }
