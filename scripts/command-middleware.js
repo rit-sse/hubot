@@ -3,7 +3,7 @@
 //
 module.exports = function(robot) {
 
-  robot.listenerMiddleware(function(robot, context, next, done){
+  robot.listenerMiddleware(function(context, next, done){
     var id = context.listener.options.id;
     var room = context.response.envelope.room;
     var user = context.response.envelope.user;
