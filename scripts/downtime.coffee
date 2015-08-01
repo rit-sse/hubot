@@ -10,18 +10,18 @@ module.exports = (robot) ->
       message = level
       level = 'debug'
     robot.logger[level] "[hubot-downtime-#{ level }] #{ message }"
-    
+
   starttime = new Date();
   lasttime = null;
-  
+
   robot.brain.on 'save', () ->
     if (!lasttime) && (robot.brain.data.timestamp) #Hold off loading this until first save, so we know data is loaded into the brain
       lasttime = new Date(robot.brain.data.timestamp)
       _log 'info', "Loaded prior timestamp #{lasttime} as last save time."
     robot.brain.data.timestamp = new Date()
-  
-  
-  robot.respond /downtime$/i, (msg) ->
+
+
+  robot.respond /downtime$/i, id: 'downtime', (msg) ->
     if (lasttime)
       msg.send timeDiff("I went down at approximately #{lasttime}. I was down for ", lasttime, starttime);
     else
@@ -38,7 +38,7 @@ timeDiff = (prefix, start, now) ->
   intervals.hour = Math.floor((uptime_seconds % 86400) / 3600)
   intervals.minute = Math.floor(((uptime_seconds % 86400) % 3600) / 60)
   intervals.second = ((uptime_seconds % 86400) % 3600) % 60
-  
+
   elements = []
   for own interval, value of intervals
     if value > 0
@@ -49,5 +49,5 @@ timeDiff = (prefix, start, now) ->
     response += ' and ' + last
   else
     response = elements.join ', '
-  
+
   return prefix + response + '.'

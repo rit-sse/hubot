@@ -8,15 +8,15 @@
 #   hubot mustache me <query> - Searches Google Images for the specified query and mustaches it.
 
 module.exports = (robot) ->
-  robot.respond /(image|img)( me)? (.*)/i, (msg) ->
+  robot.respond /(image|img)( me)? (.*)/i, id: 'google.image-me', (msg) ->
     imageMe msg, msg.match[3], (url) ->
       msg.send url
 
-  robot.respond /(animate|gif)( me)? (.*)/i, (msg) ->
+  robot.respond /(animate|gif)( me)? (.*)/i, id: 'google.animate-me', (msg) ->
     imageMe msg, msg.match[3], true, (url) ->
       msg.send url
 
-  robot.respond /(?:mo?u)?sta(?:s|c)he?(?: me)? (.*)/i, (msg) ->
+  robot.respond /(?:mo?u)?sta(?:s|c)he?(?: me)? (.*)/i, id: 'google.mustache-me', (msg) ->
     type = Math.floor(Math.random() * 6)
     mustachify = "http://mustachify.me/#{type}?src="
     imagery = msg.match[1]
