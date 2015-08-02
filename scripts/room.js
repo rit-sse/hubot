@@ -9,8 +9,24 @@
 
 module.exports = function(robot) {
   var defaults = robot.brain.data.defaultCommands = ['room.enable', 'help', 'room.list-commands', 'room.disable'];
+  var listenerMetadata = {
+    roomEnable: {
+      id: 'room.enable',
+      help: [
+        'hubot enable <commandId> - Enable this command in the current room',
+        'hubot enable all - Enable all commands in the current room'
+      ]
+    },
+    roomDisable: {
+      id: 'room.disable',
+      help: [
+        'hubot disable <commandId> - Disable this command in the current room',
+        'hubot disable all - Disable all commands in the current room'
+      ]
+    },
+  }
 
-  robot.respond(/enable (.*)/i, {id: 'room.enable'}, function(msg) {
+  robot.respond(/enable (.*)/i, listenerMetadata.roomEnable, function(msg) {
     var room = msg.message.room;
     var user = msg.envelope.user;
 
@@ -45,7 +61,7 @@ module.exports = function(robot) {
     }
   });
 
-  robot.respond(/disable (.*)/i, {id: 'room.disable'}, function(msg) {
+  robot.respond(/disable (.*)/i, listenerMetadata.roomDisable, function(msg) {
     var room = msg.message.room;
     var user = msg.envelope.user;
 
@@ -82,28 +98,5 @@ module.exports = function(robot) {
     } else {
       robot.send({ room: msg.envelope.user.name }, "Only admins can disable commands");
     }
-  });
-
-  robot.respond(/list commands/i, {id: 'room.list-commands'}, function(msg) {
-    var room = msg.message.room;
-
-    var commandBlacklists = robot.brain.data.commandBlacklists || {};
-    var disabled = commandBlacklists[room] || [];
-
-    var enabled = robot.listeners.reduce(function(prev, listener){
-      if(disabled.indexOf(listener.options.id) == -1){
-        if(listener.options.id) {
-          prev.push(listener.options.id);
-        }
-      }
-      return prev;
-    }, []);
-
-    var message = "*Enabled Commands in " + room + "*\n";
-    message += enabled.join('\n');
-    message += "\n\n*Disabled Commands in " + room + "*\n";
-    message += disabled.join('\n');
-
-    robot.send({ room: msg.envelope.user.name }, message);
   });
 }

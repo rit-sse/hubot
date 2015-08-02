@@ -53,23 +53,32 @@ helpContents = (name, commands) ->
   """
 
 module.exports = (robot) ->
-  robot.respond /help\s*(.*)?$/i, {id: 'help'}, (msg) ->
-    cmds = robot.helpCommands()
+  listenerMetadata =
+    id: 'help'
+    help: [
+      'hubot help - Displays all of the help commands that Hubot knows about.',
+      'hubot help <query> - Displays all help commands that match <query>.'
+    ]
+  robot.respond /help\s*(.*)?$/i, listenerMetadata, (msg) ->
+    cmds = robot.listeners.map (l) ->
+      l.options
+
     filter = msg.match[1]
 
     if filter
       cmds = cmds.filter (cmd) ->
-        cmd.match new RegExp(filter, 'i')
+        [].concat(cmd.help).join('\n').match new RegExp(filter, 'i')
       if cmds.length == 0
         robot.send { room: msg.envelope.user.name }, "No available commands match #{filter}"
         return
 
     prefix = robot.alias or robot.name
-    cmds = cmds.map (cmd) ->
-      cmd = cmd.replace /hubot/ig, robot.name
-      cmd.replace new RegExp("^#{robot.name}"), prefix
-
-    emit = cmds.join "\n"
+    emit = ''
+    cmds = cmds.forEach (cmd) ->
+      help = [].concat(cmd.help).join('\n')
+      help = help.replace /hubot/ig, robot.name
+      help.replace new RegExp("^#{robot.name}"), prefix
+      emit += "*#{cmd.id}*:\n#{help}\n"
 
     robot.send { room: msg.envelope.user.name }, emit
 

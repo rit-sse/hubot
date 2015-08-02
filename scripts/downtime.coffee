@@ -20,8 +20,11 @@ module.exports = (robot) ->
       _log 'info', "Loaded prior timestamp #{lasttime} as last save time."
     robot.brain.data.timestamp = new Date()
 
+  listenerMetadata  =
+    id: 'downtime'
+    help: 'hubot downtime - Display the last date the bot went down, and for about how long it was down for'
 
-  robot.respond /downtime$/i, id: 'downtime', (msg) ->
+  robot.respond /downtime$/i, listenerMetadata , (msg) ->
     if (lasttime)
       msg.send timeDiff("I went down at approximately #{lasttime}. I was down for ", lasttime, starttime);
     else

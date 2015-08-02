@@ -4,7 +4,11 @@
 # Commands:
 #   hubot youtube me <query> - Searches YouTube for the query and returns the video embed link.
 module.exports = (robot) ->
-  robot.respond /(youtube|yt)( me)? (.*)/i, id: 'google.youtube-me', (msg) ->
+  listenerMetadata =
+    id: 'google.youtube-me'
+    help: 'hubot youtube me <query> - Searches YouTube for the query and returns the video embed link.'
+
+  robot.respond /(youtube|yt)( me)? (.*)/i, listenerMetadata, (msg) ->
     query = msg.match[3]
     robot.http("http://gdata.youtube.com/feeds/api/videos")
       .query({
