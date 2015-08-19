@@ -76,12 +76,18 @@ getCode = (language,languages) ->
       return code if lang.toLowerCase() is language.toLowerCase()
 
 module.exports = (robot) ->
+  listenerMetadata =
+    id: 'translate'
+    help: [
+      'hubot translate me <phrase> - Searches for a translation for the <phrase> and then prints that bad boy out.'
+      'hubot translate me from <source> into <target> <phrase> - Translates <phrase> from <source> into <target>. Both <source> and <target> are optional'
+    ]
   language_choices = (language for _, language of languages).sort().join('|')
   pattern = new RegExp('translate(?: me)?' +
                        "(?: from (#{language_choices}))?" +
                        "(?: (?:in)?to (#{language_choices}))?" +
                        '(.*)', 'i')
-  robot.respond pattern, id: 'translate', (msg) ->
+  robot.respond pattern, listenerMetadata, (msg) ->
     term   = "\"#{msg.match[3]}\""
     origin = if msg.match[1] isnt undefined then getCode(msg.match[1], languages) else 'auto'
     target = if msg.match[2] isnt undefined then getCode(msg.match[2], languages) else 'en'

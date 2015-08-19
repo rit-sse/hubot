@@ -4,28 +4,23 @@
 # Commands:
 #   hubot image me <query> - The Original. Queries Google Images for <query> and returns a random top result.
 #   hubot gif me <query> - The same thing as `image me`, except adds a few parameters to try to return an animated GIF instead.
-#   hubot mustache me <url> - Adds a mustache to the specified URL.
-#   hubot mustache me <query> - Searches Google Images for the specified query and mustaches it.
 
 module.exports = (robot) ->
-  robot.respond /(image|img)( me)? (.*)/i, id: 'google.image-me', (msg) ->
+  listenerMetadata =
+    imageMe:
+      id: 'google.image-me'
+      help: 'hubot image me <query> - The Original. Queries Google Images for <query> and returns a random top result.'
+    gifMe:
+      id: 'google.gif-me'
+      help: 'hubot gif me <query> - The same thing as `image me`, except adds a few parameters to try to return an animated GIF instead.'
+
+  robot.respond /(image|img)( me)? (.*)/i, listenerMetadata.imageMe, (msg) ->
     imageMe msg, msg.match[3], (url) ->
       msg.send url
 
-  robot.respond /(animate|gif)( me)? (.*)/i, id: 'google.animate-me', (msg) ->
+  robot.respond /(animate|gif)( me)? (.*)/i, listenerMetadata.gifMe, (msg) ->
     imageMe msg, msg.match[3], true, (url) ->
       msg.send url
-
-  robot.respond /(?:mo?u)?sta(?:s|c)he?(?: me)? (.*)/i, id: 'google.mustache-me', (msg) ->
-    type = Math.floor(Math.random() * 6)
-    mustachify = "http://mustachify.me/#{type}?src="
-    imagery = msg.match[1]
-
-    if imagery.match /^https?:\/\//i
-      msg.send "#{mustachify}#{imagery}"
-    else
-      imageMe msg, imagery, false, true, (url) ->
-        msg.send "#{mustachify}#{url}"
 
 imageMe = (msg, query, animated, faces, cb) ->
   cb = animated if typeof animated == 'function'

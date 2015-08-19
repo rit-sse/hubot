@@ -5,5 +5,8 @@ set -e
 npm install
 export PATH="node_modules/.bin:node_modules/hubot/node_modules/.bin:$PATH"
 export HUBOT_SLACK_TOKEN=[TOKEN]
+export SSE_API_ROOT="http://localhost:3000/api/v1/"
+export HUBOT_ALIAS="+"
+export SLACK_SECRET="my_super_secret"
 
 exec node_modules/.bin/hubot "$@"

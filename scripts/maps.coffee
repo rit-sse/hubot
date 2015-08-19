@@ -5,8 +5,11 @@
 #   hubot map me <query> - Returns a map view of the area returned by `query`.
 
 module.exports = (robot) ->
+  listenerMetadata  =
+    id: 'google.map-me'
+    help: 'hubot map me <query> - Returns a map view of the area returned by `query`'
 
-  robot.respond /(?:(satellite|terrain|hybrid)[- ])?map me (.+)/i, id: 'google.map-me', (msg) ->
+  robot.respond /(?:(satellite|terrain|hybrid)[- ])?map me (.+)/i, listenerMetadata, (msg) ->
     mapType  = msg.match[1] or "roadmap"
     location = msg.match[2]
     mapUrl   = "http://maps.google.com/maps/api/staticmap?markers=" +

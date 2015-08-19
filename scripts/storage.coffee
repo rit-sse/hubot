@@ -3,17 +3,13 @@
 #
 # Commands:
 #   hubot show users - Display all users that hubot knows about
-#   hubot show storage - Display the contents that are persisted in the brain
-
-
-Util = require "util"
 
 module.exports = (robot) ->
-  robot.respond /show storage$/i, id: 'storage.show', (msg) ->
-    output = Util.inspect(robot.brain.data, false, 4)
-    robot.send { room: msg.envelope.user.name }, output
+  listenerMetadata =
+    id: 'storage.users'
+    help: 'hubot show users - Display all users that hubot knows about'
 
-  robot.respond /show users$/i, id: 'storage.users', (msg) ->
+  robot.respond /show users$/i, listenerMetadata, (msg) ->
     response = ""
 
     for own key, user of robot.brain.data.users

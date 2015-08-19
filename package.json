@@ -9,6 +9,9 @@
     "campfire",
     "bot"
   ],
+  "scripts": {
+    "lint": "eslint ."
+  },
   "description": "A simple helpful robot for your Company",
   "licenses": [
     {
@@ -29,10 +32,14 @@
     "hubot-scripts": ">= 2.5.0 < 3.0.0",
     "hubot-slack": "^3.3.0",
     "jsdom": "*",
+    "slushy": "rit-sse/slushy",
     "underscore": "*"
   },
   "engines": {
     "node": ">= 0.8.x",
     "npm": ">= 1.1.x"
+  },
+  "devDependencies": {
+    "eslint": "^1.2.0"
   }
 }
