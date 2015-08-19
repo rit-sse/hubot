@@ -78,7 +78,8 @@ module.exports = (robot) ->
       help = [].concat(cmd.help).join('\n')
       help = help.replace /hubot/ig, robot.name
       help.replace new RegExp("^#{robot.name}"), prefix
-      emit += "*#{cmd.id}*:\n#{help}\n"
+      if(cmd.id)
+        emit += "*#{cmd.id}*:\n#{help}\n"
 
     robot.send { room: msg.envelope.user.name }, emit
 
