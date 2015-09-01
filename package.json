@@ -40,6 +40,7 @@
     "npm": ">= 1.1.x"
   },
   "devDependencies": {
-    "eslint": "^1.2.0"
+    "eslint": "^1.2.0",
+    "sse-eslint": "rit-sse/eslint"
   }
 }
